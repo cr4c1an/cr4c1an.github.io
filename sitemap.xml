@@ -1,16 +1,47 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
-  <sitemap>
-    <loc>http://localhost:1313/en/sitemap.xml</loc>
-    
-      <lastmod>2024-11-02T01:44:28+08:00</lastmod>
-    
-  </sitemap>
-  
-  <sitemap>
-    <loc>http://localhost:1313/pt/sitemap.xml</loc>
-    
-  </sitemap>
-  
-</sitemapindex>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>//localhost:1313/categories/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/ctf/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/categories/ctf/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/posts/hello_world/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/ida/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/posts/idn/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/posts/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/reverse/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/series/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/series/test/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/categories/%E5%85%B6%E4%BB%96/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/%E9%97%B2%E8%B0%88/</loc>
+    <lastmod>2024-11-02T11:17:17+08:00</lastmod>
+  </url>
+</urlset>

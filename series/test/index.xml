@@ -2,25 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Test on cr4c1an</title>
-    <link>//localhost:1313/series/test/</link>
+    <link>cr4c1an.github.io/series/test/</link>
     <description>Recent content in Test on cr4c1an</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
     <lastBuildDate>Sat, 02 Nov 2024 11:17:17 +0800</lastBuildDate>
-    <atom:link href="//localhost:1313/series/test/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="cr4c1an.github.io/series/test/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hello, world</title>
-      <link>//localhost:1313/posts/hello_world/</link>
+      <link>cr4c1an.github.io/posts/hello_world/</link>
       <pubDate>Sat, 02 Nov 2024 11:17:17 +0800</pubDate>
-      <guid>//localhost:1313/posts/hello_world/</guid>
+      <guid>cr4c1an.github.io/posts/hello_world/</guid>
       <description>&lt;p&gt;你好，世界。总之折腾了挺久终于把这个博客给部署上了 github.io，作为我的个人博客，希望大家看得开心。&lt;/p&gt;</description>
     </item>
     <item>
       <title>IDA 基础使用</title>
-      <link>//localhost:1313/posts/idn/</link>
+      <link>cr4c1an.github.io/posts/idn/</link>
       <pubDate>Sat, 02 Nov 2024 11:17:17 +0800</pubDate>
-      <guid>//localhost:1313/posts/idn/</guid>
+      <guid>cr4c1an.github.io/posts/idn/</guid>
       <description>&lt;p&gt;TODO.&lt;/p&gt;</description>
     </item>
   </channel>

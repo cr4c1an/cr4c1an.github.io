@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on cr4c1an</title>
     <link>cr4c1an.github.io/categories/</link>
     <description>Recent content in Categories on cr4c1an</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh</language>
-    <copyright>&lt;a href=&#34;https://creativecommons.org/licenses/by-nc/4.0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CC BY-NC 4.0&lt;/a&gt;</copyright>
+    <copyright>copyleft</copyright>
     <lastBuildDate>Sat, 02 Nov 2024 11:17:17 +0800</lastBuildDate>
     <atom:link href="cr4c1an.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -15,7 +15,6 @@
       <pubDate>Sat, 02 Nov 2024 11:17:17 +0800</pubDate>
       <guid>cr4c1an.github.io/categories/ctf/</guid>
       <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
     </item>
     <item>
       <title>其他</title>
@@ -23,7 +22,6 @@
       <pubDate>Sat, 02 Nov 2024 11:17:17 +0800</pubDate>
       <guid>cr4c1an.github.io/categories/%E5%85%B6%E4%BB%96/</guid>
       <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
     </item>
   </channel>
 </rss>

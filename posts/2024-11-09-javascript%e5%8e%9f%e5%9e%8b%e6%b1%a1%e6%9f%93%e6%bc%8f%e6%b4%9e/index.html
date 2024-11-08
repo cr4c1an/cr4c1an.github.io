@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-	<meta name="generator" content="Hugo 0.136.5">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<style type=text/css>body{font-family:monospace;}</style>
-	<title>cr4c1an</title>
+	<title>Javascript原型污染漏洞</title>
 	<meta name="description" content="My new homepage or blog">
 	
 	<link rel="stylesheet" href="/css/style.css">
 	
-	<link rel="alternate" type="application/rss+xml" href="/index.xml" title="cr4c1an">
+	
 </head>
 <body>
 	<header>
@@ -35,22 +34,21 @@
 
 	
 	<main>
-		
-		
-			<article>
-	<h1><a href="https://cr4c1an.github.io/posts/2024-11-09-javascript%e5%8e%9f%e5%9e%8b%e6%b1%a1%e6%9f%93%e6%bc%8f%e6%b4%9e/">Javascript原型污染漏洞</a></h1>
-	<b><time>2024-11-09 00:41:35</time></b>
-	
-	<a href="/tags/ctf">CTF</a>
-	
-	<a href="/tags/web">web</a>
-	
-	<a href="/tags/javascript">JavaScript</a>
-	
-	<a href="/tags/node.js">node.js</a>
-	
-	<div>
-		<h1 id="javascript原型污染漏洞">Javascript原型污染漏洞</h1>
+		<article>
+			<h1>Javascript原型污染漏洞</h1>
+			<b><time>2024-11-09 00:41:35</time></b>
+		       
+		           <a href="/tags/ctf">CTF</a>
+        	       
+		           <a href="/tags/web">web</a>
+        	       
+		           <a href="/tags/javascript">JavaScript</a>
+        	       
+		           <a href="/tags/node.js">node.js</a>
+        	       
+
+			<div>
+				<h1 id="javascript原型污染漏洞">Javascript原型污染漏洞</h1>
 <p>js 里的对象可以简单地理解成是其原型（prototype）的一个实例。由于历史原因，所有的对象都有一个__proto__属性。
 对于没有任何继承关系的对象，他的原型是 Object。
 假设一个对象叫作 ori，一个 tar，那么当</p>
@@ -58,48 +56,29 @@
 </span></span></code></pre></div><p>时，访问 <code>tar.att</code> 的结果是，由于tar.att 属性不直接存在，所以找其原型，故其值为 &ldquo;test&rdquo;。
 只要我们获得了对 ori 的修改权限，我们就可以间接给 tar 添加属性。
 以上。</p>
-		
-	</div>
-</article>
 
-		
-			<article>
-	<h1><a href="https://cr4c1an.github.io/posts/hello_world/">Hello, world</a></h1>
-	<b><time>2024-11-02 11:17:17</time></b>
-	
-	<a href="/tags/%E9%97%B2%E8%B0%88">闲谈</a>
-	
-	<div>
-		<p>你好，世界。总之折腾了挺久终于把这个博客给部署上了 github.io，作为我的个人博客，希望大家看得开心。</p>
-		
-	</div>
-</article>
-
-		
-			<article>
-	<h1><a href="https://cr4c1an.github.io/posts/idn/">IDA 基础使用</a></h1>
-	<b><time>2024-11-02 11:17:17</time></b>
-	
-	<a href="/tags/ctf">CTF</a>
-	
-	<a href="/tags/ida">IDA</a>
-	
-	<a href="/tags/reverse">Reverse</a>
-	
-	<div>
-		<p>TODO.</p>
-		
-	</div>
-</article>
-
-		
-		<div>
-
-1 of 1
-
-</div>
-
+			</div>
+		</article>
 	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/posts/2024-11-09-javascript%e5%8e%9f%e5%9e%8b%e6%b1%a1%e6%9f%93%e6%bc%8f%e6%b4%9e/">Javascript原型污染漏洞</a></li>
+				
+				<li><a href="/posts/hello_world/">Hello, world</a></li>
+				
+				<li><a href="/posts/idn/">IDA 基础使用</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
+
 
 	<footer>
 	<p>&copy; 2024 <a href="https://cr4c1an.github.io/"><b>copyleft</b></a>.

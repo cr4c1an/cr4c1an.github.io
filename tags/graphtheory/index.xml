@@ -1,48 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>cr4c1an</title>
-    <link>https://cr4c1an.github.io/</link>
-    <description>Recent content on cr4c1an</description>
+    <title>GraphTheory on cr4c1an</title>
+    <link>https://cr4c1an.github.io/tags/graphtheory/</link>
+    <description>Recent content in GraphTheory on cr4c1an</description>
     <generator>Hugo</generator>
     <language>zh</language>
     <copyright>copyleft</copyright>
     <lastBuildDate>Sat, 21 Dec 2024 18:37:35 +0800</lastBuildDate>
-    <atom:link href="https://cr4c1an.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://cr4c1an.github.io/tags/graphtheory/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>分块 Floyd-Warshall 算法</title>
       <link>https://cr4c1an.github.io/posts/%E5%88%86%E5%9D%97-floyd-warshall-%E7%AE%97%E6%B3%95/</link>
       <pubDate>Sat, 21 Dec 2024 18:37:35 +0800</pubDate>
       <guid>https://cr4c1an.github.io/posts/%E5%88%86%E5%9D%97-floyd-warshall-%E7%AE%97%E6%B3%95/</guid>
       <description>&lt;p&gt;普通的 Floyd 算法我们都会了。那么并行化的 Floyd 算法如何呢？&lt;/p&gt;&#xA;&lt;h2 id=&#34;朴素并行化&#34;&gt;朴素并行化&lt;/h2&gt;&#xA;&lt;p&gt;考虑一份经典的 Floyd 代码：&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; k &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; k &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; N; k&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;) {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; N; i&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;) {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; j &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; j &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; N; j&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;) {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;&#x9;dis[i][j] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; min(dis[i][j], dis[i][k] &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; dis[k][j]);&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;&#x9;}&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#x9;}&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;显然我们可以将第三层循环展开，用 SIMD 优化之。或者，第二、三层循环都可以直接 omp parallel。（请读者自行证明第二层循环也可以，因为任意 &lt;code&gt;dis[k][j]&lt;/code&gt; 不会被一个比当前 &lt;code&gt;i&lt;/code&gt; 更小的 &lt;code&gt;i1&lt;/code&gt; 在这一轮的 &lt;code&gt;k&lt;/code&gt; 上以 &lt;code&gt;dis[i1][j]&lt;/code&gt; 的方式更新）这里给出第三层循环 omp parallel for 的代码：&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; k &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; k &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; N; k&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;) {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; N; i&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;) {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;#pragma omp parallel for&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; j &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; j &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;=&lt;/span&gt; N; j&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;) {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            dis[i][j] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; min(dis[i][j], dis[i][k] &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; dis[k][j]);&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;注意到 &lt;code&gt;dis[i][k]&lt;/code&gt; 等内存访问比较花费时间，编译器没帮你优化好的话，比如在 &lt;code&gt;-O0&lt;/code&gt; 下，性能会不佳。可以利用一些临时变量辅助，减少 &lt;code&gt;dis[i][k]&lt;/code&gt; 的寻址时间。这里就不贴代码了。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>分块Floyd Warshall算法</title>
-      <link>https://cr4c1an.github.io/posts/2024-12-21-%e5%88%86%e5%9d%97floyd-warshall%e7%ae%97%e6%b3%95/</link>
-      <pubDate>Sat, 21 Dec 2024 18:36:52 +0800</pubDate>
-      <guid>https://cr4c1an.github.io/posts/2024-12-21-%e5%88%86%e5%9d%97floyd-warshall%e7%ae%97%e6%b3%95/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Javascript原型污染漏洞</title>
-      <link>https://cr4c1an.github.io/posts/2024-11-09-javascript%e5%8e%9f%e5%9e%8b%e6%b1%a1%e6%9f%93%e6%bc%8f%e6%b4%9e/</link>
-      <pubDate>Sat, 09 Nov 2024 00:41:35 +0800</pubDate>
-      <guid>https://cr4c1an.github.io/posts/2024-11-09-javascript%e5%8e%9f%e5%9e%8b%e6%b1%a1%e6%9f%93%e6%bc%8f%e6%b4%9e/</guid>
-      <description>&lt;h1 id=&#34;javascript原型污染漏洞&#34;&gt;Javascript原型污染漏洞&lt;/h1&gt;&#xA;&lt;p&gt;js 里的对象可以简单地理解成是其原型（prototype）的一个实例。由于历史原因，所有的对象都有一个__proto__属性。&#xA;对于没有任何继承关系的对象，他的原型是 Object。&#xA;假设一个对象叫作 ori，一个 tar，那么当&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-javascript&#34; data-lang=&#34;javascript&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;ori&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;__proto__&amp;#34;&lt;/span&gt;].&lt;span style=&#34;color:#a6e22e&#34;&gt;att&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;test&amp;#34;&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;时，访问 &lt;code&gt;tar.att&lt;/code&gt; 的结果是，由于tar.att 属性不直接存在，所以找其原型，故其值为 &amp;ldquo;test&amp;rdquo;。&#xA;只要我们获得了对 ori 的修改权限，我们就可以间接给 tar 添加属性。&#xA;以上。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Hello, world</title>
-      <link>https://cr4c1an.github.io/posts/hello_world/</link>
-      <pubDate>Sat, 02 Nov 2024 11:17:17 +0800</pubDate>
-      <guid>https://cr4c1an.github.io/posts/hello_world/</guid>
-      <description>&lt;p&gt;你好，世界。总之折腾了挺久终于把这个博客给部署上了 github.io，作为我的个人博客，希望大家看得开心。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>IDA 基础使用</title>
-      <link>https://cr4c1an.github.io/posts/idn/</link>
-      <pubDate>Sat, 02 Nov 2024 11:17:17 +0800</pubDate>
-      <guid>https://cr4c1an.github.io/posts/idn/</guid>
-      <description>&lt;p&gt;TODO.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

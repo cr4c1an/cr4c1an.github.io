@@ -38,6 +38,59 @@
 		
 		
 			<article>
+	<h1><a href="https://cr4c1an.github.io/posts/%E5%88%86%E5%9D%97-floyd-warshall-%E7%AE%97%E6%B3%95/">分块 Floyd-Warshall 算法</a></h1>
+	<b><time>2024-12-21 18:37:35</time></b>
+	
+	<a href="/tags/hpc">HPC</a>
+	
+	<a href="/tags/algorithm">Algorithm</a>
+	
+	<a href="/tags/graphtheory">GraphTheory</a>
+	
+	<a href="/tags/cache_opt">Cache_opt</a>
+	
+	<div>
+		<p>普通的 Floyd 算法我们都会了。那么并行化的 Floyd 算法如何呢？</p>
+<h2 id="朴素并行化">朴素并行化</h2>
+<p>考虑一份经典的 Floyd 代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; k <span style="color:#f92672">&lt;=</span> N; k<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> N; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;=</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>			dis[i][j] <span style="color:#f92672">=</span> min(dis[i][j], dis[i][k] <span style="color:#f92672">+</span> dis[k][j]);
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>显然我们可以将第三层循环展开，用 SIMD 优化之。或者，第二、三层循环都可以直接 omp parallel。（请读者自行证明第二层循环也可以，因为任意 <code>dis[k][j]</code> 不会被一个比当前 <code>i</code> 更小的 <code>i1</code> 在这一轮的 <code>k</code> 上以 <code>dis[i1][j]</code> 的方式更新）这里给出第三层循环 omp parallel for 的代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; k <span style="color:#f92672">&lt;=</span> N; k<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> N; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#pragma omp parallel for
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;=</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            dis[i][j] <span style="color:#f92672">=</span> min(dis[i][j], dis[i][k] <span style="color:#f92672">+</span> dis[k][j]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>注意到 <code>dis[i][k]</code> 等内存访问比较花费时间，编译器没帮你优化好的话，比如在 <code>-O0</code> 下，性能会不佳。可以利用一些临时变量辅助，减少 <code>dis[i][k]</code> 的寻址时间。这里就不贴代码了。</p>
+		
+			<a href="https://cr4c1an.github.io/posts/%E5%88%86%E5%9D%97-floyd-warshall-%E7%AE%97%E6%B3%95/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+			<article>
+	<h1><a href="https://cr4c1an.github.io/posts/2024-12-21-%e5%88%86%e5%9d%97floyd-warshall%e7%ae%97%e6%b3%95/">分块Floyd Warshall算法</a></h1>
+	<b><time>2024-12-21 18:36:52</time></b>
+	
+	<a href="/tags/default">default</a>
+	
+	<div>
+		
+		
+	</div>
+</article>
+
+		
+			<article>
 	<h1><a href="https://cr4c1an.github.io/posts/2024-11-09-javascript%e5%8e%9f%e5%9e%8b%e6%b1%a1%e6%9f%93%e6%bc%8f%e6%b4%9e/">Javascript原型污染漏洞</a></h1>
 	<b><time>2024-11-09 00:41:35</time></b>
 	

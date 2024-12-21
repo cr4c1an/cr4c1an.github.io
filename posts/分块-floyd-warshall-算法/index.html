@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<style type=text/css>body{font-family:monospace;}</style>
+	<title>分块 Floyd-Warshall 算法</title>
+	<meta name="description" content="My new homepage or blog">
+	
+	<link rel="stylesheet" href="/css/style.css">
+	
+	
+</head>
+<body>
+	<header>
+	=============<br>
+	== <a href="https://cr4c1an.github.io/">cr4c1an</a> ==<br>
+	=============
+	<div style="float: right;">三径就荒，松菊犹存。</div><br>
+	<p>
+	<nav>
+			<a href="/"><b>Start</b></a>.
+			
+			
+			<a href="/posts"><b>Blog</b></a>.
+			
+			<a href="/tags"><b>tags</b></a>.
+			
+	</nav>
+	</p>
+	
+</header>
+
+	
+	<main>
+		<article>
+			<h1>分块 Floyd-Warshall 算法</h1>
+			<b><time>2024-12-21 18:37:35</time></b>
+		       
+		           <a href="/tags/hpc">HPC</a>
+        	       
+		           <a href="/tags/algorithm">Algorithm</a>
+        	       
+		           <a href="/tags/graphtheory">GraphTheory</a>
+        	       
+		           <a href="/tags/cache_opt">Cache_opt</a>
+        	       
+
+			<div>
+				<p>普通的 Floyd 算法我们都会了。那么并行化的 Floyd 算法如何呢？</p>
+<h2 id="朴素并行化">朴素并行化</h2>
+<p>考虑一份经典的 Floyd 代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; k <span style="color:#f92672">&lt;=</span> N; k<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> N; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;=</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>			dis[i][j] <span style="color:#f92672">=</span> min(dis[i][j], dis[i][k] <span style="color:#f92672">+</span> dis[k][j]);
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>显然我们可以将第三层循环展开，用 SIMD 优化之。或者，第二、三层循环都可以直接 omp parallel。（请读者自行证明第二层循环也可以，因为任意 <code>dis[k][j]</code> 不会被一个比当前 <code>i</code> 更小的 <code>i1</code> 在这一轮的 <code>k</code> 上以 <code>dis[i1][j]</code> 的方式更新）这里给出第三层循环 omp parallel for 的代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> k <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; k <span style="color:#f92672">&lt;=</span> N; k<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> N; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#pragma omp parallel for
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;=</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            dis[i][j] <span style="color:#f92672">=</span> min(dis[i][j], dis[i][k] <span style="color:#f92672">+</span> dis[k][j]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>注意到 <code>dis[i][k]</code> 等内存访问比较花费时间，编译器没帮你优化好的话，比如在 <code>-O0</code> 下，性能会不佳。可以利用一些临时变量辅助，减少 <code>dis[i][k]</code> 的寻址时间。这里就不贴代码了。</p>
+<h2 id="继续优化的思路">继续优化的思路</h2>
+<p>假设我们的 cpu 有 10 个核心，$N=10^5$，那么对第三层循环的 omp parallel，其一个线程所要访问的是一个连续的 $N=10^4$ 的内存空间 （omp 采用 static 分配）。要硬说的话，locality 其实还不错毕竟是连续的。但是这样的 10 个核心的内存访问并发量还是太大了，带宽跟不上。所以其实上面朴素的优化起不到太大作用。</p>
+<p>我们试图找到一个方式增强 locality，减少内存访问。</p>
+<h2 id="分块-floyd-大致步骤">分块 Floyd 大致步骤</h2>
+<ol>
+<li><strong>分块</strong>。根据 cpu 缓存大小，把 <code>dis</code> 数组分块。我们这里将这个块大小设为 $b\times b$，第 $i$ 行第 $j$ 列的那个块矩阵是 $B_{ij}$（所以统共有大约 $O(\dfrac{N^2}{b^2})$ 个 $B_{ij}$）；</li>
+<li>在对角线上的块内执行经典 Floyd。设某一对角线上的块 $B_{aa}$ 内的点的集合为 $V_{a}$ ，那么我们得到了 $V_{a}$ 经由 $V_{a}$ 走向 $V_{a}$ 的最短路（我的意思是，$V_{a}$ 中的所有点经由 $V_{a}$ 中的任意点，走向 $V_{a}$ 的所有点各自的最短路，换句话说，$V_{a}$ 内的全源最短路）；</li>
+<li>我们试图得到任一个 $V_{j}$ 经由 $V_{a}$ 走向 $V_{k}$ 的最短路。（这条路可以被描述为 $j\to a_{1}\to \cdots\to a_{n}\to k$，其中箭头指的是直接联通路。）如何做？
+<ol>
+<li>显然我们如果同时枚举 $a_{1}$ 和 $a_{n}$ ，四层循环，复杂度不对。</li>
+<li>我们先求 $V_{a}$ 经由 $V_{a}$ 走向 $V_{k}$ 的最短路。由于经由的点只能在 $V_{a}$ 里，我们可以知道这一条路径形如 $S \to a_{1}\to a_{2}\to \cdots \to a_{n} \to T$ 其中 $S,a_{1\cdots n}$ 都在 $V_{a}$ 里，$T$ 在 $V_{k}$ 里，每一个箭头表示一条直接路。那么我们对于任意的 $S$ 和 $T$ 不妨直接枚举一个从 $V_{a}$ 出去的出口节点 $a_{n}$ ，既然刚刚已经计算过了从 $S$ 到 $a_{n}$ 的最短路，而且 $a_{n}\to T$ 这条路也是确定无疑的直接联通路，那么整条路的长度就是可求的。</li>
+<li>依据同样的办法我们求 $V_{j}$ 经由 $V_{a}$ 走向 $V_a$ 的最短路。</li>
+<li>现在我们想要的那条任一个 $V_{j}$ 经由 $V_{a}$ 走向 $V_{k}$ 的最短路，也就是 $j\to a_{1}\to \cdots\to a_{n}\to k$，可以通过枚举任一个 $a$ ，求 $\mathrm{dis}(j, a)+\mathrm{dis}(a, k)$ 的 $\min$ 就行。这样复杂度就是正确的。</li>
+</ol>
+</li>
+<li>最后，我们试图得到任一个 $V_{j}$ 经由任意点走向 $V_{k}$ 的最短路。只需要枚举所有第 3 步里的 $V_{a}$ 就可以完成任务了。</li>
+</ol>
+<h2 id="时间复杂度分析">时间复杂度分析</h2>
+<ul>
+<li>对对角线上的块内进行 Floyd，复杂度是 $O(\dfrac{N}{b} * b^3) = O(Nb^2)$；</li>
+<li>上述第 3 步，枚举 $V_{j}$ 和 $V_{k}$ （其实是在 <code>for j</code> 和 <code>for k</code>）复杂度 $O(\dfrac{N}{b}\times \dfrac{N}{b})$. 子步骤复杂度为 $O(b^3)$（见下），故总复杂度 $O(N^2 b)$
+<ul>
+<li>枚举 $S$ 和 $T$ ，复杂度是 $O(b^2)$ ；枚举出口 $a_{n}$ 复杂度 $O(b)$，总复杂度 $O(b^3)$</li>
+<li>枚举 $j, a_{n}, k$ （其中 $j, k$ 都是某结点）复杂度是 $O(b^3)$ 。</li>
+</ul>
+</li>
+<li>枚举 $V_{a}$ 复杂度 $O(\dfrac{N}{b})$。
+总复杂度 $O(N^2b\times \dfrac{N}{b})=O(N^3)$ .</li>
+</ul>
+<h2 id="空间复杂度分析">空间复杂度分析</h2>
+<p>原地进行，没有额外的空间开销。复杂度 $O(N^3)$。</p>
+<h2 id="实现">实现</h2>
+<h2 id="性能分析">性能分析</h2>
+<h3 id="理论分析">理论分析</h3>
+<h3 id="profile">profile</h3>
+
+			</div>
+		</article>
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/posts/%E5%88%86%E5%9D%97-floyd-warshall-%E7%AE%97%E6%B3%95/">分块 Floyd-Warshall 算法</a></li>
+				
+				<li><a href="/posts/2024-12-21-%e5%88%86%e5%9d%97floyd-warshall%e7%ae%97%e6%b3%95/">分块Floyd Warshall算法</a></li>
+				
+				<li><a href="/posts/2024-11-09-javascript%e5%8e%9f%e5%9e%8b%e6%b1%a1%e6%9f%93%e6%bc%8f%e6%b4%9e/">Javascript原型污染漏洞</a></li>
+				
+				<li><a href="/posts/hello_world/">Hello, world</a></li>
+				
+				<li><a href="/posts/idn/">IDA 基础使用</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
+
+
+	<footer>
+	<p>&copy; 2024 <a href="https://cr4c1an.github.io/"><b>copyleft</b></a>.
+	</p>
+</footer>
+
+</body>
+</html>
